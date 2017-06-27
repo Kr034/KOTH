@@ -9,5 +9,4 @@ public class KOTHRegistry {
 
 	private static final List<Faction> rs = new ArrayList<>();
 
-	
 }
