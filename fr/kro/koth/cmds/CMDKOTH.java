@@ -18,22 +18,22 @@ public class CMDKOTH extends MainCommand {
 			p.sendMessage(notPerm);
 			return;
 		}
-			Player player = p.getPlayer();
-			Inventory inv = Bukkit.createInventory(null, 27, "Â§6KOTH Â§4Menu");
+		Player player = p.getPlayer();
+		Inventory inv = Bukkit.createInventory(null, 27, "§6KOTH §4Menu");
 
-			player.openInventory(inv);
+		player.openInventory(inv);
 
-			ItemStack info = new ItemStack(Material.DIAMOND_SWORD);
-			ItemMeta infoM = info.getItemMeta();
-			infoM.setDisplayName("Â§2Information");
-			info.setItemMeta(infoM);
+		ItemStack info = new ItemStack(Material.DIAMOND_SWORD);
+		ItemMeta infoM = info.getItemMeta();
+		infoM.setDisplayName("§2Information");
+		info.setItemMeta(infoM);
 
-			ItemStack regle = new ItemStack(Material.BOOK);
-			ItemMeta regleM = regle.getItemMeta();
-			regleM.setDisplayName("Â§2RÃ¨gles du jeu!");
-			regle.setItemMeta(regleM);
+		ItemStack regle = new ItemStack(Material.BOOK);
+		ItemMeta regleM = regle.getItemMeta();
+		regleM.setDisplayName("§2Regles du jeu!");
+		regle.setItemMeta(regleM);
 
-			inv.setItem(10, info);
-			inv.setItem(16, regle);
+		inv.setItem(10, info);
+		inv.setItem(16, regle);
 	}
 }
