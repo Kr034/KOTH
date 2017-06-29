@@ -3,6 +3,8 @@ package fr.kro.koth;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,7 +18,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import be.Vilevar.PvPFac.Faction.Faction;
+import fr.kro.koth.game.GameState;
+import fr.kro.koth.region.Region;
 
 public class KOTHListener implements Listener {
 
@@ -71,8 +74,45 @@ public class KOTHListener implements Listener {
 		}
 	}
 
+	// Timer
+
+	public int tache;
+	public int compte = 20;
+
+	@SuppressWarnings("deprecation")
+	public void timer() {
+		tache = Bukkit.getServer().getScheduler().scheduleAsyncRepeatingTask(Main.getPlugin(Main.class),
+				new Runnable() {
+
+					@Override
+					public void run() {
+						if (compte <= 0) {
+							Bukkit.broadcastMessage("§2Le timer est §cterminé §2!");
+							Bukkit.getServer().getScheduler().cancelTask(tache);
+						} else {
+							Bukkit.broadcastMessage("§2Le timer est à " + ChatColor.RED + compte + " §2secondes !");
+
+							compte--;
+						}
+
+					}
+				}, 20L, 20L);
+	}
+
 	@EventHandler
 	public void onMove(PlayerMoveEvent e) {
 		Player p = e.getPlayer();
+		Location loc = p.getLocation();
+		if (Main.getCurrentState() == GameState.GAME) {
+			if (Region.getRegion(loc) == null) {
+				return;
+			}
+			if (Region.getRegion(loc).getName().equalsIgnoreCase("Bleu")) {
+				p.sendMessage("Bravo l'equipe Bleu a perdu");
+			}
+			if (Region.getRegion(loc).getName().equalsIgnoreCase("Rouge")) {
+				p.sendMessage("Bravo l'equipe Rouge a perdu");
+			}
+		}
 	}
 }

@@ -38,10 +38,10 @@ public class Main extends JavaPlugin {
 			@Override
 			public void run() {
 				String date = new SimpleDateFormat("uu - kk:mm:ss").format(new Date(System.currentTimeMillis()));
-				if (date.equals("03 - 15:00:00")) {
+				if (date.equals("03 - 17:23:00")) {
 					Bukkit.broadcastMessage("ง6KOTH ยง3dans 15 minutes !ง2 Pour plus d'infos : /f koth !");
 				}
-				if (date.equals("03 - 15:15:00")) {
+				if (date.equals("03 - 17:23:10")) {
 					for (Player pls : Bukkit.getOnlinePlayers()) {
 						Location loc = pls.getLocation();
 						if (Region.isInRegion(loc)) {

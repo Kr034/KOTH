@@ -28,6 +28,7 @@ public class AKOTHCMD extends CmdAdminsCommands {
 			// Run and stop commands
 			{
 				if (args[0].equalsIgnoreCase("run")) {
+					KOTHManager.startGame();
 					if (args.length > 1)
 						a.sendMessage(suppl_arg);
 					return;
