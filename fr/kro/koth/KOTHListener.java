@@ -74,8 +74,6 @@ public class KOTHListener implements Listener {
 		}
 	}
 
-	// Timer
-
 	public int tache;
 	public int compte = 20;
 

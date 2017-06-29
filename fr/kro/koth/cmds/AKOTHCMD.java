@@ -1,5 +1,7 @@
 package fr.kro.koth.cmds;
 
+import java.util.UUID;
+
 import org.bukkit.Location;
 
 import be.Vilevar.PvPFac.Commands.Admins.CmdAdminsCommands;
@@ -21,7 +23,7 @@ public class AKOTHCMD extends CmdAdminsCommands {
 			return;
 		}
 		if (args.length == 0) {
-			a.sendMessage("§a/" + label + " koth §c" + acmd.getUtilisation());
+			a.sendMessage("§a/" + label + " §c" + acmd.getUtilisation());
 			return;
 		}
 		if (args.length >= 1) {
@@ -44,11 +46,11 @@ public class AKOTHCMD extends CmdAdminsCommands {
 			}
 		}
 		if (args.length >= 1) {
-			// Run and stop commands
+			// Region commands
 			{
 				if (args[0].equalsIgnoreCase("region") || args[0].equalsIgnoreCase("rg")) {
 					if (args.length == 1) {
-						a.sendMessage("§a/" + label + " koth §c" + acmd.getUtilisation());
+						a.sendMessage("§a/" + label + " §c" + acmd.getUtilisation());
 						return;
 					}
 					if (args[1].equalsIgnoreCase("list")) {
@@ -67,30 +69,50 @@ public class AKOTHCMD extends CmdAdminsCommands {
 					}
 					if (args[1].equalsIgnoreCase("add")) {
 						if (args.length == 3) {
-							Location l1 = ((Location[]) KOTHListener.location.get(a.getUniqueId()))[0];
-							Location l2 = ((Location[]) KOTHListener.location.get(a.getUniqueId()))[1];
-							new Region(args[2], l1, l2);
-							a.sendMessage("§2La region :§e " + args[2].toString() + "§2 à été créer.");
+							if (!pt2(a.getUniqueId())) {
+								a.sendMessage("§2La region : §e" + args[2].toString()
+										+ "&2 ne peut être créer car aucun points n'a été sélectioner");
+								return;
+							}
+							if (Region.existRegion(args[2])) {
+								a.sendMessage("§2La region :§e " + args[2].toString() + "§2 existe déjà.");
+								return;
+							} else if (!Region.existRegion(args[2])) {
+								new Region(args[2], ((Location[]) KOTHListener.location.get(a.getUniqueId()))[0],
+										((Location[]) KOTHListener.location.get(a.getUniqueId()))[1]);
+								a.sendMessage("§2La region :§e " + args[2].toString() + "§2 à été créer.");
+								return;
+							} else if (args.length > 3)
+								a.sendMessage(suppl_arg);
+							if (args.length <= 2)
+								a.sendMessage("§a/" + label + " §c" + acmd.getUtilisation());
 							return;
-						} else if (args.length > 3)
-							a.sendMessage(suppl_arg);
-						if (args.length <= 2)
-							a.sendMessage("§a/" + label + " koth §c" + acmd.getUtilisation());
-						return;
+						}
 					}
 					if (args[1].equalsIgnoreCase("del")) {
 						if (args.length == 3) {
-							Region.getRegion(args[2]).del();
-							a.sendMessage("§2La region :§e " + args[2].toString() + "§2 à été supprimer.");
+							if (!Region.existRegion(args[2])) {
+								a.sendMessage("§2La region :§e " + args[2].toString() + "§2 n'existe pas.");
+								return;
+							} else if (Region.existRegion(args[2])) {
+								Region.getRegion(args[2]).del();
+								a.sendMessage("§2La region :§e " + args[2].toString() + "§2 à été supprimer.");
+								return;
+							} else if (args.length > 3)
+								a.sendMessage(suppl_arg);
+							if (args[2] == null)
+								a.sendMessage("§a/" + label + " §c" + acmd.getUtilisation());
 							return;
-						} else if (args.length > 3)
-							a.sendMessage(suppl_arg);
-						if (args.length <= 2)
-							a.sendMessage("§a/" + label + " koth §c" + acmd.getUtilisation());
-						return;
+						}
 					}
 				}
 			}
 		}
 	}
+
+	private static boolean pt2(UUID uuid) {
+		return (KOTHListener.location.containsKey(uuid)) && (((Location[]) KOTHListener.location.get(uuid))[0] != null)
+				&& (((Location[]) KOTHListener.location.get(uuid))[1] != null);
+	}
+
 }
