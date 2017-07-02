@@ -4,26 +4,29 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import be.Vilevar.PvPFac.Faction.Faction;
+import be.Vilevar.PvPFac.Player.FPlayer;
 import fr.kro.koth.game.GameState;
 import fr.kro.koth.region.Region;
 
 public class KOTHListener implements Listener {
 
 	public static HashMap<UUID, Location[]> location = new HashMap<UUID, Location[]>();
+	public HashMap<Faction, Integer> map = new HashMap<>();
 
 	@EventHandler
 	public void onClick(InventoryClickEvent e) {
@@ -74,42 +77,56 @@ public class KOTHListener implements Listener {
 		}
 	}
 
-	public int tache;
-	public int compte = 20;
-
-	@SuppressWarnings("deprecation")
-	public void timer() {
-		tache = Bukkit.getServer().getScheduler().scheduleAsyncRepeatingTask(Main.getPlugin(Main.class),
-				new Runnable() {
-
-					@Override
-					public void run() {
-						if (compte <= 0) {
-							Bukkit.broadcastMessage("§2Le timer est §cterminé §2!");
-							Bukkit.getServer().getScheduler().cancelTask(tache);
-						} else {
-							Bukkit.broadcastMessage("§2Le timer est à " + ChatColor.RED + compte + " §2secondes !");
-
-							compte--;
-						}
-
-					}
-				}, 20L, 20L);
-	}
-
+	@SuppressWarnings({ "deprecation" })
 	@EventHandler
-	public void onMove(PlayerMoveEvent e) {
+	public void onBreakBlock(BlockBreakEvent e) {
+
+		ItemStack gg = new ItemStack(Material.DIAMOND, 16);
+
 		Player p = e.getPlayer();
-		Location loc = p.getLocation();
+		Location loc = e.getBlock().getLocation();
+		Block b = e.getBlock();
+
+		int points = p.getLevel();
+				
 		if (Main.getCurrentState() == GameState.GAME) {
 			if (Region.getRegion(loc) == null) {
 				return;
 			}
-			if (Region.getRegion(loc).getName().equalsIgnoreCase("Bleu")) {
-				p.sendMessage("Bravo l'equipe Bleu a perdu");
-			}
-			if (Region.getRegion(loc).getName().equalsIgnoreCase("Rouge")) {
-				p.sendMessage("Bravo l'equipe Rouge a perdu");
+			if (Region.getRegion(loc).getName().equalsIgnoreCase("Totem")) {
+				if (b.getType() == Material.OBSIDIAN) {
+					p.setLevel(1);
+					Bukkit.broadcastMessage("§3[§2KOTH§3] §5--> §6Le premier §4block§6 du Totem a été detruit, par §9"
+							+ p.getName().toString() + " §6de la faction §d"
+							+ FPlayer.getFPlayer(p).getFaction().getName().toString() + "§6!");
+					map.put(FPlayer.getFPlayer(p).getFaction(), points);
+				}
+				if (b.getType() == Material.BEACON) {
+					p.setLevel(2);
+					Bukkit.broadcastMessage("§3[§2KOTH§3] §5--> §6Le deuxième §4block§6 du Totem a été detruit, par §9"
+							+ p.getName().toString() + " §6de la faction §d"
+							+ FPlayer.getFPlayer(p).getFaction().getName().toString()
+							+ "§6, Il reste plus qu'un §4Block§6!");
+					map.put(FPlayer.getFPlayer(p).getFaction(), points);
+				}
+				if (map.containsValue(2)) {
+					Bukkit.broadcastMessage("§3[§2KOTH§3] §5--> §6Bravo à §9" + p.getName().toString()
+							+ "§6 la faction §d" + FPlayer.getFPlayer(p).getFaction().getName().toString()
+							+ " §6qui à détruit le totem et qui gagne le KOTH d'aujourd'hui !");
+					Main.setNextGameState();
+					Bukkit.broadcastMessage(
+							"§3[§2KOTH§3] §5--> §6Partie terminée, prochaine partie dans une semaine !");
+					map.clear();
+					Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(Main.getPlugin(Main.class),
+							new Runnable() {
+
+								@Override
+								public void run() {
+									FPlayer pf = FPlayer.getFPlayer(p);
+									pf.getPlayer().getInventory().addItem(gg);
+								}
+							}, 150L);
+				}
 			}
 		}
 	}

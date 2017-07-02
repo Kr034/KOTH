@@ -31,15 +31,18 @@ public class AKOTHCMD extends CmdAdminsCommands {
 			{
 				if (args[0].equalsIgnoreCase("run")) {
 					KOTHManager.startGame();
+					a.sendMessage("§2Vous avez forcé le démarage de la partie de la partie.");
 					if (args.length > 1)
 						a.sendMessage(suppl_arg);
 					return;
 				} else if (args[0].equalsIgnoreCase("stop")) {
 					if (args.length > 1)
 						a.sendMessage(suppl_arg);
-					if (Main.getCurrentState() != GameState.NORMAL)
+					if (Main.getCurrentState() == GameState.GAME) {
+						a.sendMessage("§2Vous avez forcé l'arrêt de la partie.");
 						KOTHManager.stopGame();
-					else
+						return;
+					} else if (Main.getCurrentState() != GameState.GAME)
 						a.sendMessage("§cAucune partie n'est en cours.");
 					return;
 				}
@@ -70,12 +73,12 @@ public class AKOTHCMD extends CmdAdminsCommands {
 					if (args[1].equalsIgnoreCase("add")) {
 						if (args.length == 3) {
 							if (!pt2(a.getUniqueId())) {
-								a.sendMessage("§2La region : §e" + args[2].toString()
-										+ "&2 ne peut être créer car aucun points n'a été sélectioner");
+								a.sendMessage("§cLa region : §e" + args[2].toString()
+										+ "§c ne peut être créer car aucun points n'a été sélectioner");
 								return;
 							}
 							if (Region.existRegion(args[2])) {
-								a.sendMessage("§2La region :§e " + args[2].toString() + "§2 existe déjà.");
+								a.sendMessage("§cLa region :§e " + args[2].toString() + "§c existe déjà.");
 								return;
 							} else if (!Region.existRegion(args[2])) {
 								new Region(args[2], ((Location[]) KOTHListener.location.get(a.getUniqueId()))[0],
@@ -92,7 +95,7 @@ public class AKOTHCMD extends CmdAdminsCommands {
 					if (args[1].equalsIgnoreCase("del")) {
 						if (args.length == 3) {
 							if (!Region.existRegion(args[2])) {
-								a.sendMessage("§2La region :§e " + args[2].toString() + "§2 n'existe pas.");
+								a.sendMessage("§cLa region :§e " + args[2].toString() + "§c n'existe pas.");
 								return;
 							} else if (Region.existRegion(args[2])) {
 								Region.getRegion(args[2]).del();
